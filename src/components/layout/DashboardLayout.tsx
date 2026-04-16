@@ -10,12 +10,17 @@ import {
   BarChart3, 
   Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  ChefHat,
+  FileText,
+  Menu,
+  Plus
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,10 +29,12 @@ interface DashboardLayoutProps {
 const menuItems = [
   { icon: LayoutDashboard, label: 'Overview', path: '/dashboard' },
   { icon: Package, label: 'Products', path: '/dashboard/products' },
+  { icon: FileText, label: 'Recipes', path: '/dashboard/recipes' },
   { icon: ShoppingCart, label: 'Orders', path: '/dashboard/orders' },
   { icon: Database, label: 'Inventory', path: '/dashboard/inventory' },
   { icon: Users, label: 'Staff', path: '/dashboard/staff' },
   { icon: FlaskConical, label: 'Nutrition Lab', path: '/dashboard/lab' },
+  { icon: ChefHat, label: 'Kitchen Workflow', path: '/dashboard/kitchen' },
   { icon: BarChart3, label: 'Analytics', path: '/dashboard/analytics' },
 ];
 
@@ -45,7 +52,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             <div className="flex flex-col">
               <span className="text-xl font-serif font-bold tracking-tight text-brand-900 leading-none">NutriBake</span>
-              <span className="text-[9px] uppercase tracking-[0.2em] text-brand-500 font-bold">Admin Portal</span>
+              <span className="text-[9px] uppercase tracking-[0.2em] text-brand-500 font-bold">Management System</span>
             </div>
           </Link>
         </div>
@@ -113,39 +120,86 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-24 border-b border-brand-200 bg-white/80 backdrop-blur-md px-10 flex items-center justify-between shadow-soft z-10">
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-brand-400 font-bold">Dashboard</span>
-            <h2 className="text-2xl font-serif font-bold text-brand-900">
-              {menuItems.find(item => item.path === location.pathname)?.label || 'Overview'}
-            </h2>
-          </div>
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <header className="h-20 md:h-24 border-b border-brand-200 bg-white/80 backdrop-blur-md px-4 md:px-10 flex items-center justify-between shadow-soft z-10 shrink-0">
           <div className="flex items-center gap-4">
-            <Button variant="outline" size="icon" className="h-12 w-12 rounded-2xl border-brand-200 text-brand-600 hover:bg-brand-50 transition-all">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden h-11 w-11 rounded-2xl text-brand-700">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-80 bg-white border-r-brand-200">
+                <div className="flex flex-col h-full">
+                  <div className="flex h-24 items-center px-10 border-b border-brand-100">
+                    <Link to="/" className="flex items-center gap-3 group">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-900 text-brand-50 transition-transform group-hover:rotate-12">
+                        <span className="text-xl font-bold">N</span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xl font-serif font-bold tracking-tight text-brand-900 leading-none">NutriBake</span>
+                        <span className="text-[9px] uppercase tracking-[0.2em] text-brand-500 font-bold">Management System</span>
+                      </div>
+                    </Link>
+                  </div>
+                  <ScrollArea className="flex-1 px-6 py-8">
+                    <div className="space-y-1">
+                      {menuItems.map((item) => (
+                        <Link key={item.path} to={item.path}>
+                          <Button
+                            variant="ghost"
+                            className={cn(
+                              "w-full justify-start gap-4 h-12 rounded-2xl transition-all duration-300 px-4",
+                              location.pathname === item.path 
+                                ? "bg-brand-900 text-brand-50 hover:bg-brand-800 hover:text-brand-50 shadow-premium" 
+                                : "text-brand-600 hover:bg-brand-100 hover:text-brand-900"
+                            )}
+                          >
+                            <item.icon className={cn("h-5 w-5", location.pathname === item.path && "scale-110")} />
+                            <span className="font-bold text-sm tracking-tight">{item.label}</span>
+                          </Button>
+                        </Link>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </SheetContent>
+            </Sheet>
+            <div className="flex flex-col">
+              <span className="hidden md:block text-[10px] uppercase tracking-[0.2em] text-brand-400 font-bold">Therapeutic Nutrition & Confectionery Management System</span>
+              <h2 className="text-xl md:text-2xl font-serif font-bold text-brand-900">
+                {menuItems.find(item => item.path === location.pathname)?.label || 'Overview'}
+              </h2>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 md:gap-4">
+            <Button variant="outline" size="icon" className="hidden sm:flex h-11 w-11 md:h-12 md:w-12 rounded-2xl border-brand-200 text-brand-600 hover:bg-brand-50 transition-all">
               <Settings className="h-5 w-5" />
             </Button>
-            <div className="h-10 w-px bg-brand-200 mx-2" />
+            <div className="hidden sm:block h-8 w-px bg-brand-200 mx-1 md:mx-2" />
             <Link to="/dashboard/pos">
-              <Button className="h-12 bg-brand-900 hover:bg-brand-800 text-brand-50 rounded-2xl px-8 font-bold shadow-premium transition-all hover:scale-105 active:scale-95">
-                Create New Order
+              <Button className="h-11 md:h-12 bg-brand-900 hover:bg-brand-800 text-brand-50 rounded-2xl px-4 md:px-8 font-bold shadow-premium transition-all hover:scale-105 active:scale-95 text-sm md:text-base">
+                <span className="hidden sm:inline">Create New Order</span>
+                <Plus className="sm:hidden h-5 w-5" />
               </Button>
             </Link>
           </div>
         </header>
         
-        <ScrollArea className="flex-1 p-10">
-          <div className="mx-auto max-w-7xl">
-            <motion.div
-              key={location.pathname}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            >
-              {children}
-            </motion.div>
-          </div>
-        </ScrollArea>
+        <div className="flex-1 min-h-0 overflow-hidden">
+          <ScrollArea className="h-full w-full">
+            <div className="p-4 md:p-10 mx-auto max-w-7xl">
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+              >
+                {children}
+              </motion.div>
+            </div>
+          </ScrollArea>
+        </div>
       </main>
     </div>
   );

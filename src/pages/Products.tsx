@@ -40,11 +40,11 @@ export default function Products() {
   return (
     <div className="min-h-screen pb-20">
       {/* Header */}
-      <div className="bg-brand-100 py-20 border-b border-brand-200">
+      <div className="bg-brand-100 py-12 md:py-20 border-b border-brand-200">
         <div className="container mx-auto px-4 md:px-6">
           <div className="max-w-3xl space-y-4">
-            <h1 className="text-5xl font-serif font-bold text-brand-900">Therapeutic Collection</h1>
-            <p className="text-xl text-brand-600">
+            <h1 className="text-4xl md:text-5xl font-serif font-bold text-brand-900">Therapeutic Collection</h1>
+            <p className="text-lg md:text-xl text-brand-600">
               Browse our laboratory-crafted treats, filtered by your specific health needs.
             </p>
           </div>
@@ -102,12 +102,12 @@ export default function Products() {
 
           {/* Product Grid */}
           <div className="flex-1">
-            <div className="flex items-center justify-between mb-8">
-              <p className="text-brand-600">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+              <p className="text-brand-600 text-sm md:text-base">
                 Showing <span className="font-bold text-brand-900">{filteredProducts.length}</span> products
               </p>
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="rounded-xl border-brand-200 text-brand-600">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Button variant="outline" size="sm" className="rounded-xl border-brand-200 text-brand-600 w-full sm:w-auto">
                   <SlidersHorizontal className="mr-2 h-4 w-4" /> Sort by: Featured
                 </Button>
               </div>

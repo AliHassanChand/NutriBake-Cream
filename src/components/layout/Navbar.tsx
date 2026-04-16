@@ -65,14 +65,12 @@ export default function Navbar() {
             </Link>
 
             <Sheet>
-              <SheetTrigger
-                render={
-                  <Button variant="ghost" size="icon" className="md:hidden h-11 w-11 rounded-2xl text-brand-700">
-                    <Menu className="h-6 w-6" />
-                  </Button>
-                }
-              />
-              <SheetContent side="right" className="bg-brand-50 border-l-brand-200">
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden h-11 w-11 rounded-2xl text-brand-700">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-brand-50 border-l-brand-200 w-[300px] sm:w-[400px]">
                 <div className="flex flex-col gap-8 mt-12">
                   <div className="flex flex-col gap-4">
                     <span className="text-xs uppercase tracking-widest text-brand-400 font-bold">Navigation</span>

@@ -1,174 +1,262 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { 
+  ChefHat, 
   Clock, 
   CheckCircle2, 
-  ChefHat, 
-  Truck, 
+  AlertCircle, 
+  Timer,
+  Flame,
+  Snowflake,
+  PackageCheck,
   MoreHorizontal,
-  Search,
-  Filter,
-  ArrowRight
+  ChevronRight
 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { orders as mockOrders, products } from '@/data/mockData';
+import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
+import { motion } from 'motion/react';
+
+interface KitchenOrder {
+  id: string;
+  product: string;
+  quantity: number;
+  status: 'preparing' | 'baking' | 'cooling' | 'ready';
+  startTime: string;
+  progress: number;
+  priority: 'low' | 'medium' | 'high';
+  notes: string;
+}
+
+const mockKitchenOrders: KitchenOrder[] = [
+  {
+    id: 'K-101',
+    product: 'Monk Fruit Brownies',
+    quantity: 12,
+    status: 'baking',
+    startTime: '14:20',
+    progress: 65,
+    priority: 'high',
+    notes: 'Low-glycemic batch. Ensure oven temp is stable at 175°C.'
+  },
+  {
+    id: 'K-102',
+    product: 'Almond Flour Macarons',
+    quantity: 24,
+    status: 'preparing',
+    startTime: '14:45',
+    progress: 20,
+    priority: 'medium',
+    notes: 'Keto-friendly. Use organic egg whites only.'
+  },
+  {
+    id: 'K-103',
+    product: 'Stevia Lemon Tart',
+    quantity: 6,
+    status: 'cooling',
+    startTime: '13:50',
+    progress: 90,
+    priority: 'low',
+    notes: 'Sugar-free glaze application pending cooling.'
+  },
+  {
+    id: 'K-104',
+    product: 'Protein Power Cookies',
+    quantity: 36,
+    status: 'ready',
+    startTime: '13:15',
+    progress: 100,
+    priority: 'medium',
+    notes: 'High-protein formulation. Ready for clinical packaging.'
+  }
+];
 
 export default function KitchenWorkflow() {
-  const [activeTab, setActiveTab] = useState('all');
-  const [orders, setOrders] = useState(mockOrders);
+  const [orders, setOrders] = useState<KitchenOrder[]>(mockKitchenOrders);
 
-  const updateStatus = (orderId: string, newStatus: any) => {
-    setOrders(orders.map(order => 
-      order.id === orderId ? { ...order, status: newStatus } : order
-    ));
+  const statusColors = {
+    preparing: 'bg-blue-100 text-blue-700 border-blue-200',
+    baking: 'bg-orange-100 text-orange-700 border-orange-200',
+    cooling: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+    ready: 'bg-green-100 text-green-700 border-green-200',
   };
 
-  const filteredOrders = orders.filter(order => 
-    activeTab === 'all' || order.status === activeTab
-  );
-
-  const statusConfig = {
-    pending: { label: 'Pending', icon: Clock, color: 'bg-yellow-100 text-yellow-700', next: 'preparing' },
-    preparing: { label: 'Preparing', icon: ChefHat, color: 'bg-blue-100 text-blue-700', next: 'ready' },
-    ready: { label: 'Ready', icon: CheckCircle2, color: 'bg-green-100 text-green-700', next: 'delivered' },
-    delivered: { label: 'Delivered', icon: Truck, color: 'bg-brand-100 text-brand-700', next: null },
+  const statusIcons = {
+    preparing: ChefHat,
+    baking: Flame,
+    cooling: Snowflake,
+    ready: PackageCheck,
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-serif font-bold text-brand-900">Kitchen Workflow</h1>
-          <p className="text-brand-600">Manage the therapeutic production queue in real-time.</p>
+    <div className="space-y-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div className="space-y-1">
+          <h1 className="text-4xl font-serif font-bold text-brand-900">Kitchen Workflow</h1>
+          <p className="text-brand-600 font-medium">Real-time production management for therapeutic confections.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-2">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-8 w-8 rounded-full border-2 border-white bg-brand-200 flex items-center justify-center text-[10px] font-bold text-brand-700">
-                CH
-              </div>
-            ))}
+        <div className="flex items-center gap-4 bg-white p-2 rounded-2xl shadow-soft border border-brand-100">
+          <div className="flex items-center gap-2 px-4 py-2 border-r border-brand-100">
+            <Timer className="h-5 w-5 text-brand-400" />
+            <span className="text-sm font-bold text-brand-900">Avg. Prep: 42m</span>
           </div>
-          <span className="text-sm font-medium text-brand-500">3 Chefs Active</span>
+          <div className="flex items-center gap-2 px-4 py-2">
+            <Flame className="h-5 w-5 text-orange-500" />
+            <span className="text-sm font-bold text-brand-900">3 Active Ovens</span>
+          </div>
         </div>
       </div>
 
-      <Tabs defaultValue="all" className="w-full" onValueChange={setActiveTab}>
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <TabsList className="bg-brand-100 p-1 rounded-xl">
-            <TabsTrigger value="all" className="rounded-lg px-6 data-[state=active]:bg-white data-[state=active]:text-brand-900 data-[state=active]:shadow-sm">All Orders</TabsTrigger>
-            <TabsTrigger value="pending" className="rounded-lg px-6 data-[state=active]:bg-white data-[state=active]:text-brand-900 data-[state=active]:shadow-sm">Pending</TabsTrigger>
-            <TabsTrigger value="preparing" className="rounded-lg px-6 data-[state=active]:bg-white data-[state=active]:text-brand-900 data-[state=active]:shadow-sm">Preparing</TabsTrigger>
-            <TabsTrigger value="ready" className="rounded-lg px-6 data-[state=active]:bg-white data-[state=active]:text-brand-900 data-[state=active]:shadow-sm">Ready</TabsTrigger>
-          </TabsList>
-          
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-400" />
-              <input 
-                placeholder="Search orders..." 
-                className="w-full h-10 pl-10 pr-4 rounded-xl border border-brand-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
-              />
-            </div>
-            <Button variant="outline" size="icon" className="rounded-xl border-brand-200 text-brand-600">
-              <Filter className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredOrders.map((order) => (
-              <motion.div
-                key={order.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
-              >
-                <Card className="border-brand-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow">
-                  <CardHeader className="bg-brand-50/50 border-b border-brand-100 p-6">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg font-serif font-bold text-brand-900">{order.id}</CardTitle>
-                        <p className="text-sm text-brand-500">{order.customerName}</p>
-                      </div>
-                      <Badge className={cn(
-                        "rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest border-none",
-                        statusConfig[order.status as keyof typeof statusConfig].color
-                      )}>
-                        {statusConfig[order.status as keyof typeof statusConfig].label}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6 space-y-6">
-                    <div className="space-y-3">
-                      {order.items.map((item, idx) => {
-                        const product = products.find(p => p.id === item.productId);
-                        return (
-                          <div key={idx} className="flex justify-between items-center text-sm">
-                            <span className="text-brand-700 font-medium">
-                              <span className="font-bold text-brand-900">{item.quantity}x</span> {product?.name}
-                            </span>
-                            <Badge variant="outline" className="text-[10px] border-brand-200 text-brand-400">
-                              {product?.category.replace('-', ' ')}
-                            </Badge>
-                          </div>
-                        );
-                      })}
-                    </div>
-                    
-                    <div className="pt-4 border-t border-brand-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-xs text-brand-400">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>Ordered 12m ago</span>
-                      </div>
-                      <div className="font-bold text-brand-900">${order.total.toFixed(2)}</div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button variant="outline" className="flex-1 rounded-xl border-brand-200 text-brand-600 hover:bg-brand-50">
-                        Details
-                      </Button>
-                      {statusConfig[order.status as keyof typeof statusConfig].next && (
-                        <Button 
-                          onClick={() => updateStatus(order.id, statusConfig[order.status as keyof typeof statusConfig].next)}
-                          className="flex-1 bg-brand-700 hover:bg-brand-800 text-brand-50 rounded-xl"
-                        >
-                          Next Stage <ArrowRight className="ml-2 h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      </Tabs>
-      
-      {/* Workflow Summary */}
+      {/* Workflow Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {Object.entries(statusConfig).map(([key, config]) => (
-          <Card key={key} className="border-brand-200 bg-white rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className={cn("p-2 rounded-xl", config.color)}>
-                <config.icon className="h-5 w-5" />
+        {(['preparing', 'baking', 'cooling', 'ready'] as const).map((status) => (
+          <div key={status} className="space-y-4">
+            <div className="flex items-center justify-between px-2">
+              <div className="flex items-center gap-2">
+                <div className={cn("h-2 w-2 rounded-full", 
+                  status === 'preparing' ? 'bg-blue-500' : 
+                  status === 'baking' ? 'bg-orange-500' : 
+                  status === 'cooling' ? 'bg-cyan-500' : 'bg-green-500'
+                )} />
+                <h2 className="text-sm font-bold uppercase tracking-widest text-brand-900 capitalize">{status}</h2>
+                <Badge variant="outline" className="text-[10px] border-brand-200 text-brand-400">
+                  {orders.filter(o => o.status === status).length}
+                </Badge>
               </div>
-              <span className="text-2xl font-serif font-bold text-brand-900">
-                {orders.filter(o => o.status === key).length}
-              </span>
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-brand-300">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
             </div>
-            <p className="text-sm font-bold text-brand-900">{config.label}</p>
-            <p className="text-xs text-brand-500">Current queue</p>
-          </Card>
+
+            <div className="space-y-4 min-h-[200px]">
+              {orders.filter(o => o.status === status).map((order) => {
+                const Icon = statusIcons[order.status];
+                return (
+                  <motion.div
+                    key={order.id}
+                    layoutId={order.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="group"
+                  >
+                    <Card className="border-brand-200 shadow-soft rounded-2xl overflow-hidden hover:border-brand-400 transition-all cursor-pointer bg-white">
+                      <CardContent className="p-5 space-y-4">
+                        <div className="flex justify-between items-start">
+                          <div className="space-y-1">
+                            <h3 className="font-bold text-brand-900 leading-tight">{order.product}</h3>
+                            <p className="text-[10px] text-brand-400 font-bold uppercase tracking-wider">Order #{order.id} • Qty: {order.quantity}</p>
+                          </div>
+                          {order.priority === 'high' && (
+                            <AlertCircle className="h-4 w-4 text-red-500 animate-pulse" />
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
+                            <span className="text-brand-400">Progress</span>
+                            <span className="text-brand-900">{order.progress}%</span>
+                          </div>
+                          <Progress 
+                            value={order.progress} 
+                            className="h-1.5 rounded-full bg-brand-50"
+                            indicatorClassName={cn(
+                              status === 'preparing' ? 'bg-blue-500' : 
+                              status === 'baking' ? 'bg-orange-500' : 
+                              status === 'cooling' ? 'bg-cyan-500' : 'bg-green-500'
+                            )}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between pt-2 border-t border-brand-50">
+                          <div className="flex items-center gap-2 text-[10px] font-bold text-brand-500 uppercase tracking-wider">
+                            <Clock className="h-3 w-3" />
+                            Started {order.startTime}
+                          </div>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl text-brand-300 group-hover:text-brand-900 group-hover:bg-brand-50 transition-all">
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+              
+              {orders.filter(o => o.status === status).length === 0 && (
+                <div className="h-32 rounded-2xl border-2 border-dashed border-brand-100 flex items-center justify-center text-brand-300 text-xs font-medium">
+                  No active batches
+                </div>
+              )}
+            </div>
+          </div>
         ))}
+      </div>
+
+      {/* Lab Notes & Efficiency */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="md:col-span-2 border-brand-200 shadow-premium rounded-[2.5rem] bg-white overflow-hidden">
+          <CardHeader className="p-8 border-b border-brand-100">
+            <CardTitle className="text-xl font-serif font-bold text-brand-900">Clinical Production Notes</CardTitle>
+            <CardDescription className="text-brand-500">Special instructions for active therapeutic batches.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-8">
+            <div className="space-y-4">
+              {orders.filter(o => o.notes).map((order) => (
+                <div key={order.id} className="flex gap-4 p-4 rounded-2xl bg-brand-50/50 border border-brand-100">
+                  <div className="h-10 w-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-brand-700 shrink-0">
+                    <FlaskConical className="h-5 w-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm font-bold text-brand-900">{order.product} <span className="text-brand-400 font-medium ml-2">#{order.id}</span></p>
+                    <p className="text-sm text-brand-600 italic">"{order.notes}"</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-brand-200 shadow-premium rounded-[2.5rem] bg-brand-900 text-brand-50 overflow-hidden">
+          <CardHeader className="p-8">
+            <CardTitle className="text-xl font-serif font-bold">Kitchen Efficiency</CardTitle>
+            <CardDescription className="text-brand-300 font-medium">Daily performance metrics.</CardDescription>
+          </CardHeader>
+          <CardContent className="p-8 pt-0 space-y-8">
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <div className="space-y-1">
+                  <p className="text-3xl font-serif font-bold">94%</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-brand-300">Target Accuracy</p>
+                </div>
+                <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-6 w-6 text-green-400" />
+                </div>
+              </div>
+              <Progress value={94} className="h-2 bg-white/10" indicatorClassName="bg-green-400" />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <div className="space-y-1">
+                  <p className="text-3xl font-serif font-bold">12m</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-brand-300">Avg. Turnaround</p>
+                </div>
+                <div className="h-12 w-12 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-blue-400" />
+                </div>
+              </div>
+              <Progress value={78} className="h-2 bg-white/10" indicatorClassName="bg-blue-400" />
+            </div>
+
+            <Button className="w-full h-12 bg-white text-brand-900 hover:bg-brand-50 rounded-2xl font-bold shadow-soft">
+              View Detailed Analytics
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
+
+import { FlaskConical } from 'lucide-react';

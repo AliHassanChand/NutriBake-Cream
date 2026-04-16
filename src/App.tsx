@@ -10,12 +10,15 @@ import DashboardOverview from './pages/DashboardOverview';
 import NutritionLabDashboard from './pages/NutritionLab';
 import InventoryManagement from './pages/InventoryManagement';
 import KitchenWorkflow from './pages/KitchenWorkflow';
+import OrdersManagement from './pages/OrdersManagement';
 import StaffManagement from './pages/StaffManagement';
 import POSInterface from './pages/POSInterface';
 import ProductManagement from './pages/ProductManagement';
-
-// Placeholder components for other pages
-const NutritionLab = () => <div className="container mx-auto py-20 px-4">Nutrition Lab (Coming Soon)</div>;
+import Cart from './pages/Cart';
+import NutritionLab from './pages/NutritionLab';
+import Analytics from './pages/Analytics';
+import RecipeManagement from './pages/RecipeManagement';
+import ProductDetail from './pages/ProductDetail';
 
 function AppContent() {
   const location = useLocation();
@@ -27,11 +30,13 @@ function AppContent() {
         <Routes>
           <Route path="/dashboard" element={<DashboardOverview />} />
           <Route path="/dashboard/products" element={<ProductManagement />} />
-          <Route path="/dashboard/orders" element={<KitchenWorkflow />} />
+          <Route path="/dashboard/recipes" element={<RecipeManagement />} />
+          <Route path="/dashboard/orders" element={<OrdersManagement />} />
+          <Route path="/dashboard/kitchen" element={<KitchenWorkflow />} />
           <Route path="/dashboard/inventory" element={<InventoryManagement />} />
           <Route path="/dashboard/staff" element={<StaffManagement />} />
-          <Route path="/dashboard/lab" element={<NutritionLabDashboard />} />
-          <Route path="/dashboard/analytics" element={<div>Advanced Analytics</div>} />
+          <Route path="/dashboard/lab" element={<NutritionLab />} />
+          <Route path="/dashboard/analytics" element={<Analytics />} />
           <Route path="/dashboard/pos" element={<POSInterface />} />
         </Routes>
       </DashboardLayout>
@@ -45,7 +50,9 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/nutrition" element={<NutritionLab />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
